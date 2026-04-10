@@ -76,5 +76,5 @@ It also indicates that the model's performance may not always follow the expecte
 
 CORE_LESSON = """
 Context formatting matters most when the model is faced with multiple options that satisfy the constraints, and when the model is not strong enough to overcome position bias or distractions. In such cases, the way the information is presented can significantly influence the model's ability to select the correct answer. 
-Proper formatting can help highlight relevant information and reduce the likelihood of the model being misled by distractors or position bias.
+Proper formatting can help highlight relevant information and reduce the likelihood of the model being misled by distractors or position bias. However, now even a smaller model can correctly identify the correct answer regardless of formatting, as seen in Part C.
 """

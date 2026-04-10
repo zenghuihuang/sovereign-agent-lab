@@ -226,7 +226,7 @@ def generate_event_flyer(venue_name: str, guest_count: int, event_theme: str) ->
     
     try:
         response = client.images.generate(
-            model="black-forest-labs/FLUX.1-schnell",
+            model="black-forest-labs/flux-schnell",
             prompt=prompt,
             n=1,
         )

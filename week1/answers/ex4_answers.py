@@ -7,7 +7,7 @@ Fill this in after running exercise4_mcp_client.py.
 # ── Basic results ──────────────────────────────────────────────────────────
 
 # Tool names as shown in "Discovered N tools" output.
-TOOLS_DISCOVERED = []
+TOOLS_DISCOVERED = ['search_venues', 'get_venue_details']
 
 QUERY_1_VENUE_NAME    = "FILL_ME_IN"
 QUERY_1_VENUE_ADDRESS = "FILL_ME_IN"

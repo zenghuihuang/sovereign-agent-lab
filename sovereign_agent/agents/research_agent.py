@@ -49,6 +49,7 @@ import os
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 
 # Import tools from the shared tool layer
 # This import path is why the project structure matters —
@@ -93,7 +94,7 @@ AGENT_PROMPT = (
 
 # Build the agent once at module load time.
 # Rebuilding it on every call would be wasteful.
-_agent = create_react_agent(llm, TOOLS, prompt=AGENT_PROMPT)
+_agent = create_agent(llm, TOOLS, prompt=AGENT_PROMPT)
 
 
 # ─── Public interface ─────────────────────────────────────────────────────────

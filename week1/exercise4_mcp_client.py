@@ -41,9 +41,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.tools import StructuredTool
 from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
+#from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+
 
 load_dotenv()
 
@@ -71,7 +73,9 @@ def _make_mcp_caller(tool_name: str, server_script: str):
             async with stdio_client(params) as (r, w):
                 async with ClientSession(r, w) as session:
                     await session.initialize()
-                    result = await session.call_tool(tool_name, kwargs)
+                    # Flatten kwargs if they're wrapped in a "kwargs" key
+                    args = kwargs.get("kwargs", kwargs) if "kwargs" in kwargs else kwargs
+                    result = await session.call_tool(tool_name, args)
                     return result.content[0].text if result.content else "{}"
         return asyncio.run(_inner())
     call.__name__ = tool_name
@@ -93,6 +97,15 @@ async def discover_tools(server_script: str) -> list:
             raw   = await session.list_tools()
             tools = []
             for t in raw.tools:
+                # Build schema from MCP tool definition
+                schema = {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+                if t.inputSchema:
+                    schema = t.inputSchema
+                
                 lc_tool = StructuredTool.from_function(
                     func=_make_mcp_caller(t.name, server_script),
                     name=t.name,
@@ -105,17 +118,28 @@ async def discover_tools(server_script: str) -> list:
 # ─── Agent queries ────────────────────────────────────────────────────────────
 
 def extract_trace(result: dict) -> list:
-    trace = []
+    trace = []      
     for m in result["messages"]:
         role    = getattr(m, "type", "unknown")
         content = m.content
+        
+        # Check for OpenAI-style tool_calls attribute
+        for tc in getattr(m, "tool_calls", []) or []:
+            trace.append({"role": "tool_call", "tool": tc.get("name", "unknown"),
+                          "args": tc.get("args", {})})
+        
+        # Check for structured content with tool calls
         if isinstance(content, list):
             for block in content:
-                if isinstance(block, dict) and block.get("type") == "tool_use":
-                    trace.append({"role": "tool_call", "tool": block["name"],
-                                  "args": block.get("input", {})})
+                if isinstance(block, dict) and block.get("type") in {"tool_call", "tool_use", "function"}:
+                    trace.append({"role": "tool_call", "tool": block.get("name", "unknown"),
+                                  "args": block.get("input", block.get("parameters", {}))})
+            continue
+        
+        # Regular text content
         elif content:
             trace.append({"role": role, "content": str(content)})
+    
     return trace
 
 
@@ -132,10 +156,12 @@ def print_trace(trace: list) -> None:
 
 
 async def main() -> None:
+
+    
     llm = ChatOpenAI(
         base_url="https://api.tokenfactory.nebius.com/v1/",
         api_key=os.getenv("NEBIUS_KEY"),
-        model="meta-llama/Llama-3.3-70B-Instruct",
+        model="nvidia/nemotron-3-super-120b-a12b",
         temperature=0,
     )
 
@@ -145,7 +171,7 @@ async def main() -> None:
     tools, tool_names = await discover_tools(SERVER_SCRIPT)
     print(f"\n  Discovered {len(tools)} tools: {tool_names}")
 
-    agent  = create_react_agent(llm, tools)
+    agent  = create_agent(llm, tools)
     output = {"server_script": SERVER_SCRIPT, "tools_discovered": tool_names, "queries": {}}
 
     # ── Query 1: search + detail fetch ────────────────────────────────────────

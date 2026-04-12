@@ -13,8 +13,43 @@
           "content": "Find Edinburgh venues for 160 guests with vegan options and give me the full address of the best match."
         },
         {
+          "role": "tool_call",
+          "tool": "search_venues",
+          "args": {
+            "kwargs": {
+              "min_capacity": 160,
+              "requires_vegan": true
+            }
+          }
+        },
+        {
           "role": "ai",
-          "content": "{\"type\": \"function\", \"name\": \"search_venues\", \"parameters\": {\"kwargs\": {\"min_capacity\": 160, \"requires_vegan\": true}}}"
+          "content": "\n\n"
+        },
+        {
+          "role": "tool",
+          "content": "{\"matches\": [{\"name\": \"The Haymarket Vaults\", \"capacity\": 160, \"vegan\": true, \"status\": \"available\", \"address\": \"1 Dalry Road, Edinburgh\"}], \"count\": 1}"
+        },
+        {
+          "role": "tool_call",
+          "tool": "get_venue_details",
+          "args": {
+            "kwargs": {
+              "pub_name": "The Haymarket Vaults"
+            }
+          }
+        },
+        {
+          "role": "ai",
+          "content": "\n\n"
+        },
+        {
+          "role": "tool",
+          "content": "{\"success\": true, \"name\": \"The Haymarket Vaults\", \"capacity\": 160, \"vegan\": true, \"status\": \"available\", \"address\": \"1 Dalry Road, Edinburgh\"}"
+        },
+        {
+          "role": "ai",
+          "content": "\n\nThe best match is **The Haymarket Vaults**, located at **1 Dalry Road, Edinburgh**. This venue can accommodate 160 guests, offers a vegan menu, and is currently available."
         }
       ]
     },
@@ -26,8 +61,43 @@
           "content": "Find a venue for 300 people with vegan options."
         },
         {
+          "role": "tool_call",
+          "tool": "search_venues",
+          "args": {
+            "kwargs": {
+              "min_capacity": 300,
+              "requires_vegan": true
+            }
+          }
+        },
+        {
           "role": "ai",
-          "content": "{\"type\": \"function\", \"name\": \"search_venues\", \"parameters\": {\"kwargs\": {\"min_capacity\": 300, \"requires_vegan\": true}}}"
+          "content": "\n\n"
+        },
+        {
+          "role": "tool",
+          "content": "{\"matches\": [], \"count\": 0}"
+        },
+        {
+          "role": "tool_call",
+          "tool": "search_venues",
+          "args": {
+            "kwargs": {
+              "min_capacity": 300
+            }
+          }
+        },
+        {
+          "role": "ai",
+          "content": "\n\n"
+        },
+        {
+          "role": "tool",
+          "content": "Error executing tool search_venues: 1 validation error for search_venuesArguments\nrequires_vegan\n  Field required [type=missing, input_value={'min_capacity': 300}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.12/v/missing"
+        },
+        {
+          "role": "ai",
+          "content": "\n\nI searched the Edinburgh venue database for locations that can accommodate **at least 300 guests** and also offer a **vegan menu**. Unfortunately, no venues currently meet both criteria.\n\nIf you\u2019re flexible on either the guest count or the vegan requirement, I can run another search (for example, lowering the capacity or looking for venues without the vegan filter) to find suitable options. Just let me know how you\u2019d like to proceed!"
         }
       ]
     }

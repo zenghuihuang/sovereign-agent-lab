@@ -7,30 +7,49 @@ Fill this in after running exercise4_mcp_client.py.
 # ── Basic results ──────────────────────────────────────────────────────────
 
 # Tool names as shown in "Discovered N tools" output.
-TOOLS_DISCOVERED = []
+TOOLS_DISCOVERED = ["search_venues", "get_venue_details"]
 
-QUERY_1_VENUE_NAME    = "FILL_ME_IN"
-QUERY_1_VENUE_ADDRESS = "FILL_ME_IN"
-QUERY_2_FINAL_ANSWER  = "FILL_ME_IN"
+QUERY_1_VENUE_NAME    = "The Haymarket Vaults"
+QUERY_1_VENUE_ADDRESS = "1 Dalry Road, Edinburgh"
+QUERY_2_FINAL_ANSWER  = "No venues were found that can accommodate 300 guests with vegan options. The search returned zero matches."
 
 # ── The experiment ─────────────────────────────────────────────────────────
 # Required: modify venue_server.py, rerun, revert.
 
-EX4_EXPERIMENT_DONE = None   # True or False
+EX4_EXPERIMENT_DONE = True
 
 # What changed, and which files did or didn't need updating? Min 30 words.
 EX4_EXPERIMENT_RESULT = """
-FILL ME IN
+When The Albanach's status was changed from 'available' to 'full' in mcp_venue_server.py, the search_venues
+tool automatically excluded it from results — the filter (info["status"] == "available") meant it was not
+returned. Query 1 now returned only The Haymarket Vaults (1 match instead of 2), and the agent correctly
+picked that as the best match and fetched its details with get_venue_details.
+
+Critically: only mcp_venue_server.py needed to change. The exercise4_mcp_client.py file — and the LangGraph
+agent code — did not need ANY modification. The tools are discovered dynamically at runtime, so the agent
+immediately got the updated view of the world. This demonstrates the core MCP value: tool implementations
+and client code are decoupled. Update the server, all clients see the change automatically.
 """
 
 # ── MCP vs hardcoded ───────────────────────────────────────────────────────
 
-LINES_OF_TOOL_CODE_EX2 = 0   # count in exercise2_langgraph.py
-LINES_OF_TOOL_CODE_EX4 = 0   # count in exercise4_mcp_client.py
+LINES_OF_TOOL_CODE_EX2 = 6   # 4 explicit imports + 4 names passed to create_react_agent
+LINES_OF_TOOL_CODE_EX4 = 1   # tools, tool_names = await discover_tools(SERVER_SCRIPT)
 
 # What does MCP buy you beyond "the tools are in a separate file"? Min 30 words.
 MCP_VALUE_PROPOSITION = """
-FILL ME IN
+MCP provides dynamic tool discovery and language-agnostic interoperability. In exercise2, the agent
+must explicitly import and name every tool at code-write time — if a new tool is added, the client
+must be updated. In exercise4, the agent calls discover_tools() at runtime and gets whatever tools
+the server currently exposes, with no client changes needed.
+
+Beyond that: MCP is a protocol, not a Python import. The server could be written in any language,
+deployed remotely, or shared by completely different clients (e.g., the LangGraph research loop AND
+the Rasa CALM structured agent could both connect to the same server — which is exactly what the
+final assignment does with PyNanoClaw). A Python import can only be shared within the same Python
+process. An MCP server can be shared across processes, machines, and programming languages.
+The experiment proved it: changing the server changed both halves' world view simultaneously,
+without touching any client code.
 """
 
 # ── PyNanoClaw architecture — SPECULATION QUESTION ─────────────────────────
@@ -70,11 +89,7 @@ FILL ME IN
 #     ambiguous task.
 
 WEEK_5_ARCHITECTURE = """
-- FILL ME IN
-- FILL ME IN
-- FILL ME IN
-- FILL ME IN
-- FILL ME IN
+
 """
 
 # ── The guiding question ───────────────────────────────────────────────────
@@ -82,5 +97,5 @@ WEEK_5_ARCHITECTURE = """
 # Must reference specific things you observed in your runs. Min 60 words.
 
 GUIDING_QUESTION_ANSWER = """
-FILL ME IN
+
 """

@@ -42,8 +42,16 @@ Conversation 3 (out of scope):
 # ── Conversation 1: Happy path ─────────────────────────────────────────────
 
 CONVERSATION_1_TRACE = """
-Thank you — booking confirmed. 160 guests, 50 requiring vegan meals, £200 deposit accepted. I'll send written confirmation to the organiser shortly.
+
+AI: How many guests are you confirming for tonight's event?
+My answer ->  160 guests
+AI: And how many of those guests will need vegan meals?
+My answer ->  about 50 need vegan
+AI:What deposit amount in GBP are you proposing to secure the booking?
+My answer ->  200 deposit
+AI:Thank you — booking confirmed. 160 guests, 50 requiring vegan meals, £200 deposit accepted. I'll send written confirmation to the organiser shortly.
 Is there anything else I can help you with?
+
 """
 
 CONVERSATION_1_OUTCOME = "confirmed"
@@ -51,8 +59,16 @@ CONVERSATION_1_OUTCOME = "confirmed"
 # ── Conversation 2: Deposit too high ───────────────────────────────────────
 
 CONVERSATION_2_TRACE = """
-I need to check one thing with the organiser before I can confirm. The issue is: a deposit of £500 exceeds the organiser's authorised limit of £300. Can I call you back within 15 minutes?
+AI: calling to confirm a booking
+How many guests are you confirming for tonight's event?
+My answer  ->  160 guests
+AI:And how many of those guests will need vegan meals?
+My answer ->  about 50 need vegan
+AI:What deposit amount in GBP are you proposing to secure the booking?
+My answer ->  500 deposit
+AI:I need to check one thing with the organiser before I can confirm. The issue is: a deposit of £500 exceeds the organiser's authorised limit of £300. Can I call you back within 15 minutes?
 Is there anything else I can help you with?
+My answer  ->  /stop
 """
 
 CONVERSATION_2_OUTCOME = "escalated"
@@ -61,9 +77,14 @@ CONVERSATION_2_REASON  = "a deposit of £500 exceeds the organiser's authorised 
 # ── Conversation 3: Out of scope ───────────────────────────────────────────
 
 CONVERSATION_3_TRACE = """
-I'm sorry, I'm not trained to help with that.
-I can only help with confirming tonight's venue booking. For anything else, please contact the event organiser directly.
+
+AI:How many guests are you confirming for tonight's event?
+My answer  ->  160 guests
+AI:And how many of those guests will need vegan meals?
+My answer ->  can you arrange parking for the speakers?
+AI:I'm sorry, I'm not trained to help with that.I can only help with confirming tonight's venue booking. For anything else, please contact the event organiser directly.
 Would you like to continue with confirm booking?
+
 """
 
 # Describe what CALM did after the out-of-scope message. Min 20 words.
@@ -110,7 +131,8 @@ Ran a conversation after 16:45 (it was 19:11 local time) with the Task B block u
 After collecting all three slots (160 guests, 50 vegan, £200 deposit), the action_validate_booking
 ran and immediately escalated with the message: "it is past 16:45 — insufficient time to process
 the confirmation before the 5 PM deadline". The guard fired correctly before any other guard was
-evaluated, demonstrating time-based pre-emption. 
+evaluated, demonstrating time-based pre-emption. Task B guard is now permanently uncommented in
+the submitted code.
 """
 
 # ── CALM vs Old Rasa ───────────────────────────────────────────────────────
